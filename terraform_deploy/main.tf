@@ -9,7 +9,7 @@ provider "google" {
 }
 
 resource "google_compute_instance" "terraform" {
-  name         = "MonitoringSystem"
+  name         = "monitoring-system"
   machine_type = "e2-medium"
   zone         = "us-central1-a"
   tags         = ["http-server", "https-server"]
