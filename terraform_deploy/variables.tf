@@ -9,3 +9,7 @@ variable "user" {
 variable "project" {
   default = "cosmic-slate-292412"
 }
+
+variable "region" {
+  default = "us-central1"
+}
