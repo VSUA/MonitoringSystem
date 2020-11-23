@@ -1,3 +1,7 @@
+resource "tls_private_key" "ssh-key" {
+  algorithm   = "RSA"
+}
+
 provider "google" {
   credentials = var.credentials
   project = var.project 
@@ -5,7 +9,7 @@ provider "google" {
 }
 
 resource "google_compute_instance" "terraform" {
-  name         = "terraform-testing"
+  name         = "MonitoringSystem"
   machine_type = "e2-medium"
   zone         = "us-central1-a"
   tags         = ["http-server", "https-server"]
@@ -22,6 +26,25 @@ resource "google_compute_instance" "terraform" {
     access_config {
 
     }
+  }
+  
+  metadata = {
+    ssh-keys = "${var.user}:${tls_private_key.ssh-key.public_key_openssh}"
+  }
+  
+  provisioner "remote-exec" {
+    connection {
+      type        = "ssh"
+      port        = 22
+      user        = var.user
+      timeout     = "300s"
+      private_key = tls_private_key.ssh-key.private_key_pem
+      host = google_compute_instance.terraform.network_interface.0.access_config.0.nat_ip
+    }
+
+    inline = [
+      "touch temp.txt"
+    ]
   }
   
 }
